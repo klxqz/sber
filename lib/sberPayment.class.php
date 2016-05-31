@@ -216,7 +216,7 @@ class sberPayment extends waPayment implements waIPayment {
         $order = explode('_', $transaction_raw_data['OrderNumber']);
         $transaction_data['order_id'] = $order[0];
         $transaction_data['currency_id'] = $this->currency[$currency_id];
-        $transaction_data['amount'] = $transaction_raw_data['Amount'];
+        $transaction_data['amount'] = $transaction_raw_data['Amount'] / 100.0;
 
         return $transaction_data;
     }

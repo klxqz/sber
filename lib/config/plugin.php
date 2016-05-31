@@ -6,6 +6,6 @@ return array(
     'icon' => 'img/sber16.png',
     'logo' => 'img/sber.gif',
     'vendor' => '985310',
-    'version' => '1.0.1',
+    'version' => '1.0.2',
     'type' => waPayment::TYPE_ONLINE,
 );
