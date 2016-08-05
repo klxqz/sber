@@ -185,6 +185,7 @@ class sberPayment extends waPayment implements waIPayment {
         @curl_setopt($ch, CURLOPT_TIMEOUT, 120);
         @curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 120);
         @curl_setopt($ch, CURLE_OPERATION_TIMEOUTED, 120);
+        @curl_setopt($ch, CURLOPT_SSLVERSION, 1);
 
         $response = @curl_exec($ch);
         $app_error = null;
