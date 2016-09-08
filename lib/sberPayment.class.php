@@ -63,7 +63,8 @@ class sberPayment extends waPayment implements waIPayment {
             'returnUrl' => $returnUrl,
         );
 
-        $response = $this->sendData($url, $data);
+
+        $response = $this->sendData($url, $data, $this->ssl_version);
 
         if (isset($response['errorCode']) && $response['errorCode']) {
             throw new waPaymentException('Ошибка оплаты. ' . $response['errorMessage']);
@@ -105,7 +106,7 @@ class sberPayment extends waPayment implements waIPayment {
             'password' => $this->password,
             'orderId' => $this->order_id,
         );
-        $request = $this->sendData($url, $params);
+        $request = $this->sendData($url, $params, $this->ssl_version);
         $transaction_data = $this->formalizeData($request);
 
 
@@ -155,7 +156,7 @@ class sberPayment extends waPayment implements waIPayment {
         );
     }
 
-    private function sendData($url, $data) {
+    private function sendData($url, $data, $ssl_version = 0) {
 
         if (!extension_loaded('curl') || !function_exists('curl_init')) {
             throw new waException('PHP расширение cURL не доступно');
@@ -185,7 +186,7 @@ class sberPayment extends waPayment implements waIPayment {
         @curl_setopt($ch, CURLOPT_TIMEOUT, 120);
         @curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 120);
         @curl_setopt($ch, CURLE_OPERATION_TIMEOUTED, 120);
-        @curl_setopt($ch, CURLOPT_SSLVERSION, 1);
+        @curl_setopt($ch, CURLOPT_SSLVERSION, $ssl_version);
 
         $response = @curl_exec($ch);
         $app_error = null;
