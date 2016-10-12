@@ -46,7 +46,11 @@ class sberPayment extends waPayment implements waIPayment {
             throw new waException('Ошибка оплаты. Валюта не поддерживается');
         }
 
-        $url = $this->getUrl() . 'register.do';
+        if ($this->paynent_mode == 1) {
+            $url = $this->getUrl() . 'register.do';
+        } else {
+            $url = $this->getUrl() . 'registerPreAuth.do';
+        }
         $params = base64_encode(json_encode(array('app_id' => $this->app_id, 'merchant_id' => $this->merchant_id)));
 
         $returnUrl = $this->getRelayUrl() . '?params=' . $params;
@@ -109,11 +113,15 @@ class sberPayment extends waPayment implements waIPayment {
         $request = $this->sendData($url, $params, $this->ssl_version);
         $transaction_data = $this->formalizeData($request);
 
-
         if ($request['ErrorCode'] == 0 && $request['OrderStatus'] == 2) {
             $message = $request['ErrorMessage'];
             $app_payment_method = self::CALLBACK_PAYMENT;
             $transaction_data['state'] = self::STATE_CAPTURED;
+            $url = $this->getAdapter()->getBackUrl(waAppPayment::URL_SUCCESS, $transaction_data);
+        } elseif ($request['ErrorCode'] == 0 && $request['OrderStatus'] == 1) {
+            $message = $request['ErrorMessage'];
+            $app_payment_method = self::CALLBACK_DECLINE;
+            $transaction_data['state'] = self::STATE_DECLINED;
             $url = $this->getAdapter()->getBackUrl(waAppPayment::URL_SUCCESS, $transaction_data);
         } else {
             switch ($request['ErrorCode']) {
@@ -169,18 +177,18 @@ class sberPayment extends waPayment implements waIPayment {
         if (curl_errno($ch) != 0) {
             throw new waException('Ошибка инициализации curl: ' . curl_errno($ch));
         }
-
+/*
         $postdata = array();
 
         foreach ($data as $name => $value) {
             $postdata[] = "$name=$value";
         }
 
-        $post = implode('&', $postdata);
+        $post = implode('&', $postdata);*/
 
         @curl_setopt($ch, CURLOPT_URL, $url);
         @curl_setopt($ch, CURLOPT_POST, 1);
-        @curl_setopt($ch, CURLOPT_POSTFIELDS, $post);
+        @curl_setopt($ch, CURLOPT_POSTFIELDS, http_build_query($data));
         @curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
         @curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, 0);
         @curl_setopt($ch, CURLOPT_TIMEOUT, 120);

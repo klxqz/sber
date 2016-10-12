@@ -19,6 +19,16 @@ return array(
         'description' => '',
         'control_type' => 'checkbox',
     ),
+    'paynent_mode' => array(
+        'value' => 1,
+        'title' => 'Режим оплаты',
+        'description' => '',
+        'control_type' => waHtmlControl::RADIOGROUP,
+        'options' => array(
+            1 => 'Одностадийная оплата',
+            2 => 'Двухстадийная оплата',
+        )
+    ),
     'ssl_version' => array(
         'value' => 0,
         'title' => 'Версия SSL',
